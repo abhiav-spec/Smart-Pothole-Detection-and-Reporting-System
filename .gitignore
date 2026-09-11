@@ -88,3 +88,9 @@ apps/ai-service/tmp/
 README_preview.pdf
 *.tsbuildinfo
 .turbo/
+
+# ── AI Model & YOLO output ────────────────────────────────────────────────
+*.pt
+*.onnx
+runs/
+
