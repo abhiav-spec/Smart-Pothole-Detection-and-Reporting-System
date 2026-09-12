@@ -25,7 +25,12 @@ const envSchema = z.object({
 
   MAX_FILE_SIZE_MB: z.coerce.number().positive().default(50),
 
-  LOG_LEVEL: z.string().default("info")
+  LOG_LEVEL: z.string().default("info"),
+
+  RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
+  RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),
+  AUTH_RATE_LIMIT_MAX: z.coerce.number().default(10),
+  UPLOAD_RATE_LIMIT_MAX: z.coerce.number().default(15)
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

@@ -20,18 +20,22 @@ export const uploadMediaController = asyncHandler(async (req, res, next) => {
 
   const isVideo = req.file.mimetype.startsWith("video/");
 
+  const userId = req.user ? req.user.id : null;
+
   const detectionData = isVideo
     ? await processVideoDetection({
         file: req.file,
         latitude: location.latitude,
         longitude: location.longitude,
-        potholeId: potholeId || null
+        potholeId: potholeId || null,
+        userId
       })
     : await processImageDetection({
         file: req.file,
         latitude: location.latitude,
         longitude: location.longitude,
-        potholeId: potholeId || null
+        potholeId: potholeId || null,
+        userId
       });
 
   res.status(200).json({
