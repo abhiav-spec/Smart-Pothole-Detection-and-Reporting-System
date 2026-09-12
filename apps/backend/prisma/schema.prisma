@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum UserRole {
@@ -105,6 +106,7 @@ model Media {
   potholeId String
   pothole   Pothole   @relation(fields: [potholeId], references: [id], onDelete: Cascade)
   url       String
+  fileId    String?
   type      MediaType
   fileName  String
   mimeType  String

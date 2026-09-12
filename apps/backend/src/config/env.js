@@ -7,6 +7,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(5000),
 
   DATABASE_URL: z.string().min(1),
+  DIRECT_URL: z.string().optional(),
 
   FRONTEND_URL: z.string().url(),
 
@@ -18,10 +19,9 @@ const envSchema = z.object({
 
   AI_SERVICE_URL: z.string().url(),
 
-  AWS_REGION: z.string().min(1),
-  AWS_ACCESS_KEY_ID: z.string().optional(),
-  AWS_SECRET_ACCESS_KEY: z.string().optional(),
-  AWS_S3_BUCKET_NAME: z.string().optional(),
+  IMAGEKIT_PUBLIC_KEY: z.string().optional(),
+  IMAGEKIT_PRIVATE_KEY: z.string().optional(),
+  IMAGEKIT_URL_ENDPOINT: z.string().optional(),
 
   MAX_FILE_SIZE_MB: z.coerce.number().positive().default(50),
 
