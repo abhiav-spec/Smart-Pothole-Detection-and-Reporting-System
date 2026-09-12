@@ -23,8 +23,7 @@ describe("Role-Based Access Control (RBAC) Integration Tests", () => {
 
   beforeAll(async () => {
     const userRes = await request(app).post("/api/auth/register").send(regularUser);
-    console.log("DEBUG userRes:", userRes.status, userRes.body);
-    userToken = userRes.body?.data?.accessToken;
+    userToken = userRes.body.data.accessToken;
 
     const adminRes = await request(app).post("/api/auth/register").send(adminUser);
     adminToken = adminRes.body.data.accessToken;
@@ -58,6 +57,6 @@ describe("Role-Based Access Control (RBAC) Integration Tests", () => {
       .set("Authorization", `Bearer ${adminToken}`);
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data).toHaveProperty("totalPotholes");
+    expect(res.body.data).toHaveProperty("total");
   });
 });

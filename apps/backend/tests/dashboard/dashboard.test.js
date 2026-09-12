@@ -38,9 +38,9 @@ describe("Dashboard API Integration Tests", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data).toHaveProperty("totalPotholes");
-    expect(res.body.data).toHaveProperty("byStatus");
-    expect(res.body.data).toHaveProperty("bySeverity");
+    expect(res.body.data).toHaveProperty("total");
+    expect(res.body.data).toHaveProperty("status");
+    expect(res.body.data).toHaveProperty("severity");
   });
 
   test("GET /api/dashboard/authorities - should require authentication and return authority performance array for ADMIN", async () => {

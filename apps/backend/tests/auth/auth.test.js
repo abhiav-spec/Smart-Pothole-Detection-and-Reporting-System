@@ -17,7 +17,7 @@ describe("Authentication API Integration Tests", () => {
       .post("/api/auth/register")
       .send(testUser);
 
-    console.log("DEBUG REGISTER RESPONSE:", res.status, res.body);
+    expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.user.email).toBe(testUser.email.toLowerCase());
     expect(res.body.data.accessToken).toBeDefined();
