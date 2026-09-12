@@ -1,0 +1,121 @@
+openapi: 3.0.3
+info:
+  title: Smart Pothole Detection & Reporting System API
+  description: Comprehensive REST API for pothole detection, citizen reporting, AI inference integration, ImageKit storage, and municipal status workflows.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Local Development Server
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [USER, AUTHORITY, ADMIN]
+      responses:
+        '201':
+          description: User registered successfully
+  /auth/login:
+    post:
+      summary: Authenticate user & issue tokens
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authentication successful
+  /potholes:
+    get:
+      summary: List potholes with filtering, pagination, and sorting
+      tags:
+        - Potholes
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [REPORTED, VERIFIED, ASSIGNED, IN_PROGRESS, RESOLVED, REJECTED]
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of potholes with pagination metadata
+  /media/upload:
+    post:
+      summary: Upload pothole image & run AI detection
+      tags:
+        - Media & AI
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, latitude, longitude]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Image uploaded, AI inference complete, pothole record persisted
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
