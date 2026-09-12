@@ -1,0 +1,13 @@
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.git
+.gitignore
+.env
+tests
+test_video.py
+test_model.py
+test_api.sh
+test_video_api.sh
+video_results.json
