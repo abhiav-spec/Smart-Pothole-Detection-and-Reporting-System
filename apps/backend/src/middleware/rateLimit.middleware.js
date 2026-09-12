@@ -10,6 +10,7 @@ export const generalRateLimiter = rateLimit({
   max: env.RATE_LIMIT_MAX_REQUESTS,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   handler: (req, res, next) => {
     next(new AppError("Too many requests from this IP. Please try again later.", 429));
   }
@@ -23,6 +24,7 @@ export const authRateLimiter = rateLimit({
   max: env.AUTH_RATE_LIMIT_MAX,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   handler: (req, res, next) => {
     next(new AppError("Too many authentication attempts. Please try again later.", 429));
   }
@@ -36,6 +38,7 @@ export const uploadRateLimiter = rateLimit({
   max: env.UPLOAD_RATE_LIMIT_MAX,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   handler: (req, res, next) => {
     next(new AppError("Media upload limit reached. Please try again later.", 429));
   }
