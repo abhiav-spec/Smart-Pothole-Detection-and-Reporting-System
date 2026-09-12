@@ -10,6 +10,9 @@ def process_video(video_path: str):
     """
     cap = cv2.VideoCapture(video_path)
     
+    if not cap.isOpened():
+        raise ValueError("Invalid or corrupted video file")
+    
     # Store results for all frames
     video_results = []
     

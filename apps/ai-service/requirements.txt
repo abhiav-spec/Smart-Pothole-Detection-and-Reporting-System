@@ -6,3 +6,5 @@ pillow
 opencv-python-headless
 numpy
 pydantic-settings
+pytest
+httpx
