@@ -69,43 +69,41 @@ export default function AuthForm({
 
         {/* Form Element */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-space-md">
-          {/* Account Role Selector */}
-          <div className="flex flex-col gap-1.5">
+          {/* Select Account Role */}
+          <div className="flex flex-col gap-1.5" id="role-selector-group">
             <label className="font-label-md text-label-md text-on-surface font-semibold">
               Select Account Role
             </label>
-            <div
-              className="grid grid-cols-2 p-1 bg-surface-container-low rounded-lg gap-1"
-              role="radiogroup"
-              aria-label="Account Role"
-            >
+            <div className="grid grid-cols-2 gap-2 p-1 bg-surface-container-high rounded-xl">
               <button
                 type="button"
                 onClick={() => setUserRole("citizen")}
-                className={`py-1.5 px-3 flex items-center justify-center gap-1.5 rounded-md font-label-md text-label-md transition-all ${
+                className={`flex items-center justify-center gap-2 py-2 px-2.5 rounded-lg font-label-md text-label-md font-semibold cursor-pointer transition-all ${
                   userRole === "citizen"
-                    ? "bg-surface-container-lowest text-primary shadow-sm font-semibold"
+                    ? "bg-surface-container-lowest text-primary shadow-sm border border-primary/20"
                     : "text-on-surface-variant hover:text-on-surface"
                 }`}
               >
                 <span className="material-symbols-outlined text-[18px]">person</span>
-                <span>Citizen / Reporter</span>
+                <span>Citizen Reporter</span>
               </button>
+
               <button
                 type="button"
                 onClick={() => setUserRole("municipal")}
-                className={`py-1.5 px-3 flex items-center justify-center gap-1.5 rounded-md font-label-md text-label-md transition-all ${
+                className={`flex items-center justify-center gap-2 py-2 px-2.5 rounded-lg font-label-md text-label-md font-semibold cursor-pointer transition-all ${
                   userRole === "municipal"
-                    ? "bg-surface-container-lowest text-primary shadow-sm font-semibold"
+                    ? "bg-surface-container-lowest text-primary shadow-sm border border-primary/20"
                     : "text-on-surface-variant hover:text-on-surface"
                 }`}
               >
-                <span className="material-symbols-outlined text-[18px]">
-                  admin_panel_settings
-                </span>
-                <span>City Admin / DPW</span>
+                <span className="material-symbols-outlined text-[18px]">location_city</span>
+                <span>Municipal Admin</span>
               </button>
             </div>
+            <span className="font-body-sm text-body-sm text-outline text-[12px] pt-0.5">
+              Municipal accounts require civic email verification (.gov or municipal domain)
+            </span>
           </div>
 
           {/* Optional Name Field for Registration */}
