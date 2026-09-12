@@ -103,8 +103,8 @@ model Detection {
 
 model Media {
   id        String    @id @default(uuid())
-  potholeId String
-  pothole   Pothole   @relation(fields: [potholeId], references: [id], onDelete: Cascade)
+  potholeId String?
+  pothole   Pothole?  @relation(fields: [potholeId], references: [id], onDelete: Cascade)
   url       String
   fileId    String?
   type      MediaType
