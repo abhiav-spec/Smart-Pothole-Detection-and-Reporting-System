@@ -6,11 +6,10 @@ import PipelinePreview from "./PipelinePreview";
 import AuthForm from "./AuthForm";
 import AuthFooter from "./AuthFooter";
 
-export default function AuthPage({ initialMode = "signup" }) {
+export default function AuthPage({ initialMode = "signin" }) {
   const [mode, setMode] = useState(initialMode);
   const [userRole, setUserRole] = useState("citizen");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,8 +17,7 @@ export default function AuthPage({ initialMode = "signup" }) {
     fullName: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    termsCheck: false
+    rememberMe: false
   });
 
   const handleChange = (e) => {
@@ -34,23 +32,14 @@ export default function AuthPage({ initialMode = "signup" }) {
     e.preventDefault();
     setError("");
 
-    if (mode === "signup") {
-      if (!formData.fullName.trim()) {
-        setError("Please enter your full name.");
-        return;
-      }
-      if (formData.password.length < 8) {
-        setError("Password must be at least 8 characters long.");
-        return;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match.");
-        return;
-      }
-      if (!formData.termsCheck) {
-        setError("You must agree to the Terms of Service and Privacy Policy.");
-        return;
-      }
+    if (mode === "signup" && !formData.fullName.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
     }
 
     setLoading(true);
@@ -90,7 +79,7 @@ export default function AuthPage({ initialMode = "signup" }) {
         localStorage.setItem("user", JSON.stringify(data.data.user));
       }
 
-      // Redirect to dashboard or landing page on success
+      // Redirect to dashboard on successful login / registration
       window.location.href = "/dashboard";
     } catch (err) {
       setError(err.message || "An unexpected error occurred.");
@@ -104,28 +93,24 @@ export default function AuthPage({ initialMode = "signup" }) {
       <AuthHeader />
       <main className="w-full pt-16 bg-background flex-1 flex flex-col justify-between">
         <div className="flex flex-col w-full">
-          <div className="w-full max-w-[1440px] mx-auto px-gutter py-space-md lg:py-space-xl">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-space-xl items-start">
-              {/* Left Column: 45% (approx 5 cols out of 12) */}
-              <PipelinePreview />
+          <div className="w-full flex flex-col lg:flex-row min-h-[calc(100vh-4rem)]">
+            {/* Left Panel (45% on desktop) */}
+            <PipelinePreview />
 
-              {/* Right Column: 55% (approx 7 cols out of 12) */}
-              <AuthForm
-                mode={mode}
-                setMode={setMode}
-                userRole={userRole}
-                setUserRole={setUserRole}
-                formData={formData}
-                handleChange={handleChange}
-                handleSubmit={handleSubmit}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-                showConfirmPassword={showConfirmPassword}
-                setShowConfirmPassword={setShowConfirmPassword}
-                loading={loading}
-                error={error}
-              />
-            </div>
+            {/* Right Panel (55% on desktop) */}
+            <AuthForm
+              mode={mode}
+              setMode={setMode}
+              userRole={userRole}
+              setUserRole={setUserRole}
+              formData={formData}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+              loading={loading}
+              error={error}
+            />
           </div>
         </div>
       </main>
