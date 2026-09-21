@@ -17,9 +17,11 @@ export default function AdminSidebar({ onOpenLogout }) {
       <div className="flex flex-col">
         {/* Brand Header */}
         <div className="h-16 px-space-md flex items-center gap-space-sm border-b border-outline-variant/20">
-          <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
-            P
-          </div>
+          <img
+            alt="PotholeAI Brand Logo"
+            className="h-8 w-auto object-contain"
+            src="/images/logo.jpg"
+          />
           <div className="flex flex-col">
             <span className="font-title-md text-title-md text-on-surface font-bold tracking-tight leading-none">
               PotholeAI

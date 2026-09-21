@@ -74,7 +74,7 @@ export default function RecentReports({ reports = [] }) {
     };
 
     fetchRecentReports();
-  }, [reports]);
+  }, []); // Empty dependency array prevents infinite fetch loop
 
   return (
     <section className="flex flex-col gap-space-md">

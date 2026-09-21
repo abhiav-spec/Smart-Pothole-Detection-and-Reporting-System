@@ -21,7 +21,10 @@ export default function UserDashboard() {
         setUser(JSON.parse(savedUser));
       } catch (err) {
         console.error("Failed to parse user session", err);
+        window.location.href = "/login";
       }
+    } else {
+      window.location.href = "/login";
     }
   }, []);
 

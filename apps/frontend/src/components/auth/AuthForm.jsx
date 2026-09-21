@@ -61,38 +61,40 @@ export default function AuthForm({
 
         <form onSubmit={handleSubmit} className="flex flex-col space-y-space-md">
           <div className="flex flex-col space-y-space-sm">
-            <div className="flex flex-col space-y-1" id="role-selector-group">
-              <label className="font-label-md text-label-md text-on-surface font-semibold">Select Account Role</label>
-              <div className="grid grid-cols-2 gap-2 p-1 bg-surface-container-high rounded-xl">
-                <button
-                  type="button"
-                  onClick={() => setUserRole("citizen")}
-                  className={`flex items-center justify-center gap-2 py-2 px-2.5 rounded-lg font-label-md text-label-md font-semibold cursor-pointer transition-all ${
-                    userRole === "citizen"
-                      ? "bg-surface-container-lowest text-primary shadow-sm border border-primary/20"
-                      : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-[18px]">person</span>
-                  <span>Citizen Reporter</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUserRole("municipal")}
-                  className={`flex items-center justify-center gap-2 py-2 px-2.5 rounded-lg font-label-md text-label-md font-semibold cursor-pointer transition-all ${
-                    userRole === "municipal"
-                      ? "bg-surface-container-lowest text-primary shadow-sm border border-primary/20"
-                      : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-[18px]">location_city</span>
-                  <span>Municipal Admin</span>
-                </button>
+            {isSignIn && (
+              <div className="flex flex-col space-y-1" id="role-selector-group">
+                <label className="font-label-md text-label-md text-on-surface font-semibold">Select Account Role</label>
+                <div className="grid grid-cols-2 gap-2 p-1 bg-surface-container-high rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => setUserRole("citizen")}
+                    className={`flex items-center justify-center gap-2 py-2 px-2.5 rounded-lg font-label-md text-label-md font-semibold cursor-pointer transition-all ${
+                      userRole === "citizen"
+                        ? "bg-surface-container-lowest text-primary shadow-sm border border-primary/20"
+                        : "text-on-surface-variant hover:text-on-surface"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">person</span>
+                    <span>Citizen Reporter</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserRole("municipal")}
+                    className={`flex items-center justify-center gap-2 py-2 px-2.5 rounded-lg font-label-md text-label-md font-semibold cursor-pointer transition-all ${
+                      userRole === "municipal"
+                        ? "bg-surface-container-lowest text-primary shadow-sm border border-primary/20"
+                        : "text-on-surface-variant hover:text-on-surface"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">location_city</span>
+                    <span>Municipal Admin</span>
+                  </button>
+                </div>
+                <span className="font-body-sm text-body-sm text-outline text-[12px] pt-0.5">
+                  Municipal accounts require civic email verification (.gov or municipal domain)
+                </span>
               </div>
-              <span className="font-body-sm text-body-sm text-outline text-[12px] pt-0.5">
-                Municipal accounts require civic email verification (.gov or municipal domain)
-              </span>
-            </div>
+            )}
 
             {!isSignIn && (
               <div className="flex flex-col space-y-1">

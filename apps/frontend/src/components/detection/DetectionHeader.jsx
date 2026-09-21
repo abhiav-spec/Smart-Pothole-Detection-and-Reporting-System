@@ -32,9 +32,11 @@ export default function DetectionHeader() {
       <div className="h-16 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-teal-500 flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">
-            <span className="material-symbols-outlined text-[20px]">lens_blur</span>
-          </div>
+          <img
+            alt="PotholeAI Brand Logo"
+            className="h-8 w-auto object-contain"
+            src="/images/logo.jpg"
+          />
           <div className="flex items-center gap-2">
             <span className="font-display font-bold text-xl tracking-tight text-slate-900">
               Pothole<span className="text-primary">AI</span>

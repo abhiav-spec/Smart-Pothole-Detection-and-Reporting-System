@@ -75,60 +75,6 @@ export default function QuickActions({ onLogoutClick }) {
           </div>
         </div>
 
-        {/* Card 3: My Account */}
-        <div className="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-          <div className="flex flex-col gap-space-md">
-            <div className="w-12 h-12 rounded-lg bg-surface-container-high text-on-surface flex items-center justify-center">
-              <span className="material-symbols-outlined text-[26px]">badge</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <h3 className="font-title-md text-title-md text-on-surface font-semibold">
-                My Account
-              </h3>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Manage your profile and view your account information.
-              </p>
-            </div>
-          </div>
-          <div className="pt-space-md">
-            <Link
-              href="/dashboard/settings"
-              className="inline-flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors font-semibold"
-            >
-              <span className="material-symbols-outlined text-[18px]">person</span>
-              View Account
-            </Link>
-          </div>
-        </div>
-
-        {/* Card 4: Logout */}
-        <div className="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-          <div className="flex flex-col gap-space-md">
-            <div className="w-12 h-12 rounded-lg bg-error-container/60 text-on-error-container flex items-center justify-center">
-              <span className="material-symbols-outlined text-[26px]">logout</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <h3 className="font-title-md text-title-md text-on-surface font-semibold">
-                Logout
-              </h3>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Sign out securely from your PotholeAI account.
-              </p>
-            </div>
-          </div>
-          <div className="pt-space-md">
-            <button
-              type="button"
-              onClick={onLogoutClick}
-              className="inline-flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-surface-container hover:bg-error-container/30 text-error font-label-md text-label-md transition-colors font-semibold"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                power_settings_new
-              </span>
-              Logout
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   );

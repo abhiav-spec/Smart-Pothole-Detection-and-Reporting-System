@@ -18,9 +18,16 @@ export default function ExploreMap() {
   const [isLocating, setIsLocating] = useState(false);
 
   const [potholes, setPotholes] = useState([]);
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
 
   useEffect(() => {
+    // Auth check
+    const savedUser = localStorage.getItem("user");
+    if (!localStorage.getItem("accessToken") || !savedUser) {
+      window.location.href = "/login";
+      return;
+    }
+
     const fetchPotholes = async () => {
       try {
         const res = await fetch(`${backendUrl}/dashboard/map`);

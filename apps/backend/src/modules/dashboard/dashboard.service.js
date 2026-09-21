@@ -65,7 +65,13 @@ export const getMapPotholes = async ({ status, severity } = {}) => {
       longitude: true,
       severity: true,
       status: true,
-      createdAt: true
+      createdAt: true,
+      confidence: true,
+      media: {
+        select: {
+          url: true
+        }
+      }
     },
     orderBy: { createdAt: "desc" }
   });
