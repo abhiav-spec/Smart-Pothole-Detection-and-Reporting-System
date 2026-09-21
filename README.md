@@ -376,6 +376,18 @@ Each service has its own `.env.example`:
 
 ---
 
+1. System Admin Account
+
+Email: admin@potholeai.com
+Password: AdminPassword123!
+Role: ADMIN
+2. Municipal Admin Account (To test the Admin Dashboard)
+
+Email: municipal@potholeai.com
+Password: AdminPassword123!
+Role: AUTHORITY (Municipal Admin)
+
 ## 📄 License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+

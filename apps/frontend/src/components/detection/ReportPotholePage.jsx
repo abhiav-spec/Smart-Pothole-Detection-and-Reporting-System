@@ -90,14 +90,12 @@ export default function ReportPotholePage() {
       const token = localStorage.getItem("accessToken");
 
       const formData = new FormData();
-      if (selectedFile) {
-        formData.append("file", selectedFile);
-      } else {
-        // Fetch default preview image blob if no local file selected
-        const imgRes = await fetch(previewUrl);
-        const blob = await imgRes.blob();
-        formData.append("file", blob, "road_hazard_photo.jpg");
+      if (!selectedFile) {
+        setError("Please select an image or video to report.");
+        setSubmitting(false);
+        return;
       }
+      formData.append("file", selectedFile);
 
       formData.append("latitude", locationData.latitude.toString());
       formData.append("longitude", locationData.longitude.toString());
@@ -116,9 +114,8 @@ export default function ReportPotholePage() {
 
       setSubmitSuccess(true);
     } catch (err) {
-      console.error("Submission error:", err);
-      // Even if offline/unauthenticated, simulate clean feedback
-      setSubmitSuccess(true);
+      setError(err.message || "Failed to connect to the server.");
+      setSubmitSuccess(false);
     } finally {
       setSubmitting(false);
     }

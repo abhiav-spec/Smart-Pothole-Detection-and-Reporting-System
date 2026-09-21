@@ -1,32 +1,42 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+// Dynamically import the map component to avoid SSR 'window' errors
+const DynamicMap = dynamic(() => import("./DynamicMap"), {
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center bg-surface-container-low text-on-surface-variant">Loading Map...</div>
+});
 
 export default function ExploreMap() {
-  const mapWorldRef = useRef(null);
-  const mapViewportRef = useRef(null);
-  
-  const [currentZoom, setCurrentZoom] = useState(1);
-  const [currentX, setCurrentX] = useState(-120);
-  const [currentY, setCurrentY] = useState(-80);
-  
-  const isDraggingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startYRef = useRef(0);
+  const [currentZoom, setCurrentZoom] = useState(13);
+  const [mapCenter, setMapCenter] = useState([21.2514, 81.6296]); // Default center (e.g., Raipur)
+  const [userLocation, setUserLocation] = useState(null);
   
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
-  const updateMapTransform = (x, y, zoom) => {
-    if (mapWorldRef.current) {
-      mapWorldRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${zoom})`;
-    }
-  };
+  const [potholes, setPotholes] = useState([]);
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+  useEffect(() => {
+    const fetchPotholes = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/dashboard/map`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          setPotholes(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch map data", err);
+      }
+    };
+    fetchPotholes();
+  }, [backendUrl]);
 
   const handleZoom = (delta) => {
-    const newZoom = Math.min(Math.max(currentZoom + delta, 0.75), 1.6);
-    setCurrentZoom(newZoom);
-    updateMapTransform(currentX, currentY, newZoom);
+    setCurrentZoom(prev => Math.min(Math.max(prev + delta, 3), 18));
   };
 
   const triggerGeolocation = () => {
@@ -36,6 +46,10 @@ export default function ExploreMap() {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setIsLocating(false);
+          const newLoc = [pos.coords.latitude, pos.coords.longitude];
+          setUserLocation(newLoc);
+          setMapCenter(newLoc);
+          setCurrentZoom(16);
           displayToast(`Location locked: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
         },
         (err) => {
@@ -60,120 +74,61 @@ export default function ExploreMap() {
     }, 3500);
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     if (e.key === 'Enter') {
       const q = e.target.value.trim();
       if (q) {
         displayToast(`Searching for "${q}"...`);
-      }
-    }
-  };
-
-  // Dragging logic
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!isDraggingRef.current) return;
-      const newX = e.clientX - startXRef.current;
-      const newY = e.clientY - startYRef.current;
-      setCurrentX(newX);
-      setCurrentY(newY);
-      updateMapTransform(newX, newY, currentZoom);
-    };
-
-    const handleMouseUp = () => {
-      if (isDraggingRef.current) {
-        isDraggingRef.current = false;
-        if (mapWorldRef.current) {
-          mapWorldRef.current.style.transition = 'transform 0.5s ease-out';
+        try {
+          // Simple Nominatim Geocoding Search
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}`);
+          const data = await res.json();
+          if (data && data.length > 0) {
+            const result = data[0];
+            setMapCenter([parseFloat(result.lat), parseFloat(result.lon)]);
+            setCurrentZoom(14);
+            displayToast(`Found: ${result.display_name.substring(0, 30)}...`);
+          } else {
+            displayToast(`No results found for "${q}"`);
+          }
+        } catch (err) {
+          displayToast('Error fetching location data.');
         }
       }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [currentZoom]);
-
-  const handleMouseDown = (e) => {
-    if (e.target.closest('button, input, a')) return;
-    isDraggingRef.current = true;
-    startXRef.current = e.clientX - currentX;
-    startYRef.current = e.clientY - currentY;
-    if (mapWorldRef.current) {
-      mapWorldRef.current.style.transition = 'none';
     }
   };
 
   return (
-    <main className="w-full pt-16 bg-background">
-      <div className="flex flex-col w-full relative">
+    <main className="w-full pt-16 bg-background flex-1">
+      <div className="flex flex-col w-full h-full relative">
         {/* Interactive Map Canvas Container */}
         <div 
-          className="relative w-full h-[calc(100vh-4rem)] overflow-hidden select-none bg-surface-container-low" 
+          className="relative w-full h-[calc(100vh-4rem)] overflow-hidden bg-surface-container-low" 
           id="map"
-          ref={mapViewportRef}
-          onMouseDown={handleMouseDown}
         >
-          {/* Clean Vector Stylized Map Base */}
-          <div 
-            className="absolute -inset-[25%] w-[150%] h-[150%] transition-transform duration-500 ease-out cursor-grab active:cursor-grabbing origin-center" 
-            id="map-world"
-            ref={mapWorldRef}
-            style={{ transform: `translate3d(${currentX}px, ${currentY}px, 0px) scale(${currentZoom})` }}
-          >
-            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern height="120" id="osm-grid" patternUnits="userSpaceOnUse" width="120">
-                  <rect fill="#f8fafc" height="120" width="120"></rect>
-                  <rect fill="#f1f5f9" height="104" opacity="0.8" rx="6" width="104" x="8" y="8"></rect>
-                </pattern>
-                <pattern height="60" id="park-fill" patternUnits="userSpaceOnUse" width="60">
-                  <rect fill="#e8f5e9" height="60" width="60"></rect>
-                  <circle cx="20" cy="20" fill="#c8e6c9" r="1.5"></circle>
-                  <circle cx="45" cy="40" fill="#c8e6c9" r="2"></circle>
-                </pattern>
-              </defs>
-              {/* Base Landmass Grid */}
-              <rect fill="url(#osm-grid)" height="100%" width="100%"></rect>
-              {/* River / Stream Channel */}
-              <path d="M-100 800 C 400 700, 700 900, 1100 750 C 1500 600, 1900 850, 2400 800" fill="none" stroke="#dbeafe" strokeLinecap="round" strokeWidth="48"></path>
-              <path d="M-100 800 C 400 700, 700 900, 1100 750 C 1500 600, 1900 850, 2400 800" fill="none" stroke="#bfdbfe" strokeLinecap="round" strokeWidth="36"></path>
-              {/* Green Areas / Municipal Parks */}
-              <polygon fill="url(#park-fill)" points="320,240 580,210 620,440 360,460"></polygon>
-              <polygon fill="url(#park-fill)" points="1200,340 1480,310 1520,580 1240,610"></polygon>
-              <polygon fill="url(#park-fill)" points="780,820 1020,790 980,1020 740,990"></polygon>
-              {/* Major Arterial Highways */}
-              <path d="M-200 420 L 2600 420" stroke="#fde047" strokeLinecap="round" strokeWidth="26"></path>
-              <path d="M-200 420 L 2600 420" stroke="#ffffff" strokeLinecap="round" strokeWidth="22"></path>
-              {/* Main Road Corridor */}
-              <path d="M720 -100 L 720 1600" stroke="#fde047" strokeLinecap="round" strokeWidth="24"></path>
-              <path d="M720 -100 L 720 1600" stroke="#ffffff" strokeLinecap="round" strokeWidth="20"></path>
-              {/* Station Road & Junction Spurs */}
-              <path d="M100 1100 L 1900 200" stroke="#cbd5e1" strokeLinecap="round" strokeWidth="18"></path>
-              <path d="M100 1100 L 1900 200" stroke="#ffffff" strokeLinecap="round" strokeWidth="14"></path>
-              {/* Ring Road Outer Arc */}
-              <path d="M250 1400 Q 1400 1350 1750 350" fill="none" stroke="#94a3b8" strokeWidth="18"></path>
-              <path d="M250 1400 Q 1400 1350 1750 350" fill="none" stroke="#f8fafc" strokeWidth="14"></path>
-              {/* Local Streets & Urban Grid */}
-              <g stroke="#ffffff" strokeLinecap="square" strokeWidth="8">
-                <line x1="200" x2="1200" y1="180" y2="180"></line>
-                <line x1="300" x2="1400" y1="620" y2="620"></line>
-                <line x1="450" x2="1600" y1="840" y2="840"></line>
-                <line x1="380" x2="380" y1="100" y2="900"></line>
-                <line x1="1040" x2="1040" y1="100" y2="1100"></line>
-                <line x1="1380" x2="1380" y1="200" y2="1200"></line>
-              </g>
-            </svg>
-            {/* Marker Layer */}
-            <div className="absolute inset-0 pointer-events-none" id="api-marker-layer"></div>
+          {/* Render the actual Leaflet Map */}
+          <div className="absolute inset-0 z-0">
+            <DynamicMap 
+              center={mapCenter} 
+              zoom={currentZoom} 
+              userLocation={userLocation} 
+              potholes={potholes} 
+            />
+          </div>
+
+          {/* Back Button */}
+          <div className="absolute top-4 left-4 z-50 pointer-events-none">
+            <button
+              onClick={() => window.history.back()}
+              className="pointer-events-auto w-11 h-11 bg-surface-container-lowest/95 backdrop-blur-md rounded-xl shadow-xl border border-outline-variant/20 flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors"
+              title="Go Back"
+            >
+              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            </button>
           </div>
 
           {/* Floating Overlay: Search Bar */}
-          <div className="absolute top-4 left-4 right-4 z-40 max-w-2xl mx-auto pointer-events-none">
+          <div className="absolute top-4 left-20 right-4 z-40 max-w-2xl mx-auto pointer-events-none">
             <div className="pointer-events-auto bg-surface-container-lowest/95 backdrop-blur-md rounded-2xl shadow-xl p-2 sm:p-2.5 flex flex-col sm:flex-row items-center gap-2 border border-outline-variant/20">
               <div className="relative flex-1 w-full flex items-center">
                 <span className="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span>
@@ -181,7 +136,7 @@ export default function ExploreMap() {
                   className="w-full h-11 pl-10 pr-4 bg-surface-container-low rounded-xl font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all border-none" 
                   id="location-search-input" 
                   onKeyDown={handleSearch} 
-                  placeholder="Search location... (e.g., MG Road, Guna, Raipur)" 
+                  placeholder="Search location... (e.g., MG Road, Raipur)" 
                   type="text" 
                 />
               </div>
@@ -206,11 +161,11 @@ export default function ExploreMap() {
           </div>
 
           {/* Floating Controls: Zoom & Location */}
-          <div className="absolute top-24 right-4 z-30 flex flex-col gap-2">
-            <div className="flex flex-col bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden border border-outline-variant/30">
+          <div className="absolute top-24 right-4 z-30 flex flex-col gap-2 pointer-events-none">
+            <div className="flex flex-col bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden border border-outline-variant/30 pointer-events-auto">
               <button 
                 className="w-10 h-10 flex items-center justify-center text-on-surface hover:bg-surface-container active:bg-surface-container-high transition-colors" 
-                onClick={() => handleZoom(0.15)} 
+                onClick={() => handleZoom(1)} 
                 title="Zoom in"
               >
                 <span className="material-symbols-outlined text-[20px]">add</span>
@@ -218,14 +173,14 @@ export default function ExploreMap() {
               <div className="h-[1px] w-full bg-surface-container"></div>
               <button 
                 className="w-10 h-10 flex items-center justify-center text-on-surface hover:bg-surface-container active:bg-surface-container-high transition-colors" 
-                onClick={() => handleZoom(-0.15)} 
+                onClick={() => handleZoom(-1)} 
                 title="Zoom out"
               >
                 <span className="material-symbols-outlined text-[20px]">remove</span>
               </button>
             </div>
             <button 
-              className="w-10 h-10 rounded-xl bg-surface-container-lowest text-primary hover:bg-surface-container shadow-lg flex items-center justify-center transition-colors border border-outline-variant/30" 
+              className="w-10 h-10 rounded-xl bg-surface-container-lowest text-primary hover:bg-surface-container shadow-lg flex items-center justify-center transition-colors border border-outline-variant/30 pointer-events-auto" 
               onClick={triggerGeolocation} 
               title="My Location"
             >
@@ -234,8 +189,8 @@ export default function ExploreMap() {
           </div>
 
           {/* Floating Legend */}
-          <div className="absolute bottom-6 left-4 z-30 max-w-xs">
-            <div className="p-3.5 rounded-2xl bg-surface-container-lowest/95 backdrop-blur-md shadow-xl border border-outline-variant/20 flex flex-col gap-2.5">
+          <div className="absolute bottom-6 left-4 z-30 max-w-xs pointer-events-none">
+            <div className="p-3.5 rounded-2xl bg-surface-container-lowest/95 backdrop-blur-md shadow-xl border border-outline-variant/20 flex flex-col gap-2.5 pointer-events-auto">
               <div className="flex items-center gap-1.5 text-on-surface font-headline-sm text-[13px] font-bold">
                 <span className="material-symbols-outlined text-[16px] text-primary">legend_toggle</span>
                 <span>Hazard Severity Legend</span>

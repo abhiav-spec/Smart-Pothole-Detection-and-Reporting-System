@@ -16,10 +16,10 @@ app.use(requestLoggerMiddleware);
 // Security HTTP headers
 app.use(helmet());
 
-// Enable CORS with environment frontend URL
+// Enable CORS with environment frontend URL and common dev ports
 app.use(
   cors({
-    origin: env.FRONTEND_URL,
+    origin: [env.FRONTEND_URL, "http://localhost:3000", "http://localhost:3001"],
     credentials: true
   })
 );

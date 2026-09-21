@@ -17,6 +17,8 @@ export default function AuthPage({ initialMode = "signin" }) {
     fullName: "",
     email: "",
     password: "",
+    confirmPassword: "",
+    termsAccepted: false,
     rememberMe: false
   });
 
@@ -37,8 +39,18 @@ export default function AuthPage({ initialMode = "signin" }) {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long.");
+      return;
+    }
+
+    if (mode === "signup" && formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (mode === "signup" && !formData.termsAccepted) {
+      setError("Please accept the Terms of Service and Civic Privacy Policy.");
       return;
     }
 
@@ -91,13 +103,10 @@ export default function AuthPage({ initialMode = "signin" }) {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <AuthHeader />
-      <main className="w-full pt-16 bg-background flex-1 flex flex-col justify-between">
-        <div className="flex flex-col w-full">
-          <div className="w-full flex flex-col lg:flex-row min-h-[calc(100vh-4rem)]">
-            {/* Left Panel (45% on desktop) */}
+      <main className="w-full pt-16 bg-background min-h-screen">
+        <div className="w-full max-w-[1440px] mx-auto px-gutter py-space-md lg:py-space-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-space-xl items-start">
             <PipelinePreview />
-
-            {/* Right Panel (55% on desktop) */}
             <AuthForm
               mode={mode}
               setMode={setMode}
