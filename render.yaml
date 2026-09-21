@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: smart-pothole-ai
+    runtime: docker
+    plan: free
+    dockerfilePath: ./apps/ai-service/Dockerfile
+    dockerContext: ./apps/ai-service
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: MODEL_PATH
+        value: models/pothole/best.pt
+      - key: CONFIDENCE_THRESHOLD
+        value: "0.28"
+      - key: IMAGE_SIZE
+        value: "640"
