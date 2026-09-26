@@ -95,6 +95,14 @@ export default function ReportPotholePage() {
         setSubmitting(false);
         return;
       }
+
+      const maxUploadBytes = 4 * 1024 * 1024;
+      if (selectedFile.size > maxUploadBytes) {
+        setError("Please select an image or video smaller than 4 MB.");
+        setSubmitting(false);
+        return;
+      }
+
       formData.append("file", selectedFile);
 
       formData.append("latitude", locationData.latitude.toString());

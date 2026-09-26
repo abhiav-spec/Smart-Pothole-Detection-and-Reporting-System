@@ -50,7 +50,7 @@ export const detectImageInAi = async (fileBuffer, fileName, mimeType = "image/jp
 
     const response = await aiClient.post("/detect/image", form, {
       headers: form.getHeaders(),
-      timeout: 15000
+      timeout: env.AI_IMAGE_TIMEOUT_MS
     });
 
     return response.data;

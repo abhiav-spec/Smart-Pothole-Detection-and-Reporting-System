@@ -21,6 +21,7 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: cleanString(z.string().default("7d")),
 
   AI_SERVICE_URL: cleanString(z.string().url()),
+  AI_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(55000),
 
   IMAGEKIT_PUBLIC_KEY: cleanString(z.string().optional()),
   IMAGEKIT_PRIVATE_KEY: cleanString(z.string().optional()),
